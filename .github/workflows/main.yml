@@ -95,6 +95,7 @@ jobs:
 #    defaults:
 #      run:
 #        working-directory: ${{ github.workspace }}/helm-charts
+
     if: github.ref_name == 'main' || github.ref_name == 'test/develop'
     name: Helm CI Job
     steps:
