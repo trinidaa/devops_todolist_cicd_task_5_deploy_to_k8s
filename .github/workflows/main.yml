@@ -54,7 +54,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: python-artifacts
-          path: ./src
+          path: .
 
       - name: Upload helm artifacts
         if: github.ref_name == 'main' || github.ref_name == 'test/develop'
@@ -94,9 +94,9 @@ jobs:
     needs: python-ci
     defaults:
       run:
-        working-directory: ${{ github.workspace }}/helm-charts
+        working-directory: ./helm-charts
     if: github.ref_name == 'main' || github.ref_name == 'test/develop'
-    name: Helm CI JOB
+    name: Helm CI Job
     steps:
 
     - uses: actions/download-artifact@v4
@@ -134,7 +134,7 @@ jobs:
 
     - uses: actions/download-artifact@v4
       with:
-        name: helm-package
+        name: helm-package_on_helm-ci
         path: .
 
     - name: Set Up Helm
