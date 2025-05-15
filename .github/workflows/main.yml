@@ -4,9 +4,9 @@ run-name: ${{ github.actor }} - ${{ github.ref_name}} -${{ github.sha }}
 
 on:
   push:
-    branches: ["main"]
+    branches: ["main", "test/develop"]
   pull_request:
-    branches: ["main"]
+    branches: ["main", "test/develop"]
 
 env:
   PythonVersion: 3.8
@@ -92,7 +92,7 @@ jobs:
   helm-ci:
     runs-on: ubuntu-latest
     needs: python-ci
-    if: github.ref_name == 'main'
+    if: github.ref_name == 'main' || github.ref_name == 'test/develop'
     name: Helm CI
     steps:
 
@@ -119,11 +119,10 @@ jobs:
         name: helm-package
         path: ./*.tgz
 
-
   helm-deploy:
     runs-on: ubuntu-latest
     needs: helm-ci
-    if: github.ref_name == 'main'
+    if: github.ref_name == 'main' || github.ref_name == 'test/develop'
     name: Helm Deploy
     steps:
 
