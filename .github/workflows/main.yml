@@ -54,7 +54,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: python-artifacts
-          path: .
+          path: ./src
 
       - name: Upload helm artifacts
         if: github.ref_name == 'main' || github.ref_name == 'test/develop'
@@ -96,10 +96,11 @@ jobs:
       run:
         working-directory: ${{ github.workspace }}/helm-charts
     if: github.ref_name == 'main' || github.ref_name == 'test/develop'
-    name: Helm CI
+    name: Helm CI JOB
     steps:
 
     - uses: actions/download-artifact@v4
+      name: Download helm artifacts
       with:
         name: helm-artifacts
         path: .
@@ -111,7 +112,9 @@ jobs:
       run: helm lint ./todoapp
 
     - name: Template Helm
-      run: helm template todoapp ./todoapp -f ./todoapp/values.yaml
+      run: helm template todoapp \
+        ./todoapp -f \
+        ./todoapp/values.yaml
 
     - name: Package Helm
       run: helm package ./todoapp
@@ -119,7 +122,7 @@ jobs:
     - name: Upload Helm Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: helm-package
+        name: helm-package_on_helm-ci
         path: ./*.tgz
 
   helm-deploy:
