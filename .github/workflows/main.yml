@@ -158,9 +158,9 @@ jobs:
 
     - uses: azure/aks-set-context@v4
       with:
-        with:
-          cluster-name: ${{ vars.AZURE_CLUSTER_NAME }}
-          resource-group: ${{ vars.AZURE_RESOURCE_GROUP }}
+        cluster-name: ${{ vars.AZURE_CLUSTER_NAME }}
+        resource-group: ${{ vars.AZURE_RESOURCE_GROUP }}
+
 
     - name: Deploy Helm to AKS
       run: helm upgrade --install --atomic --dry-run --debug  todoapp ./todoapp.tgz \
