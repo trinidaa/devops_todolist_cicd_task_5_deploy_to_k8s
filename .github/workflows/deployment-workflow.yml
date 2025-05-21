@@ -1,0 +1,71 @@
+name: helm-deployment
+  run-name: ${{ github.actor }} - ${{ github.ref_name}} -${{ github.sha }}
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        description: '++++ Environment to deploy to ++++'
+        type: string
+      version:
+        required: true
+        description: '++++ Helm chart version to deploy ++++'
+        type: string
+      helm-values-path:
+        type: string
+        default: "./todoapp/values.yaml"
+jobs:
+
+    helm-deploy:
+      runs-on: ubuntu-latest
+      if: github.ref_name == 'main' || github.ref_name == 'test/develop'
+      name: ${{ inputs.environment }}
+      environment: ${{ inputs.environment }}
+      steps:
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: helm-package_on_helm-ci
+          path: .
+
+      - uses: actions/download-artifact@v4
+        name: Download helm artifacts
+        with:
+          name: helm-artifacts
+          path: .
+
+      - name: Set Up Helm
+        uses: azure/setup-helm@v4.3.0
+
+      - name: Setup Kubectl
+        uses: azure/setup-kubectl@v4
+
+      - uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - uses: azure/aks-set-context@v4
+        with:
+          cluster-name: ${{ vars.AZURE_CLUSTER_NAME }}
+          resource-group: ${{ vars.AZURE_RESOURCE_GROUP }}
+
+      - name: Deploy Helm dry-run (TEST)
+
+        run: |
+          CHART_FILE=$(ls -t todoapp-*.tgz | head -n 1)
+          helm upgrade --install  --dry-run  todoapp ./$CHART_FILE \
+
+      - name: Deploy Helm to AKS
+        run: |
+          CHART_FILE=$(ls -t todoapp-*.tgz | head -n 1)
+          helm upgrade --install --atomic --dry-run --debug  todoapp ./$CHART_FILE \
+          -f ${{ inputs.helm-values-path }}
+          --set mysql.MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}
+          --set mysql.MYSQL_USER=${{ secrets.MYSQL_USER }}
+          --set mysql.MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
+          --set todoapp.secrets.SECRET_KEY=${{ secrets.SECRET_KEY }}
+          --set todoapp.secrets.DB_NAME=${{ secrets.DB_NAME }}
+          --set todoapp.secrets.DB_USER=${{ secrets.DB_USER }}
+          --set todoapp.secrets.DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+          --set todoapp.secrets.DB_HOST=${{ secrets.DB_HOST }}
