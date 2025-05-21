@@ -128,6 +128,7 @@ jobs:
 
   deploy-helm-dev:
     needs: [docker-ci, helm-ci]
+    if: github.ref_name == 'main' || github.ref_name == 'test/develop'
     name: Deploy helm
     uses: ./.github/workflows/deployment-workflow.yml
     secrets: inherit
