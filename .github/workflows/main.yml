@@ -136,3 +136,16 @@ jobs:
     with:
       environment: develop
       version: ${{ github.sha }}
+
+
+  deploy-helm-staging:
+    if: github.ref_name == 'main' || github.ref_name == 'test/develop'
+    needs: deploy-helm-dev
+    name: Deploy helm
+    uses: ./.github/workflows/deployment-workflow.yml
+    secrets: inherit
+    with:
+      environment: staging
+      version: ${{ github.sha }}
+      helm-values-path: ./todoapp/values/stg.yaml
+      helm-release-name: todoapp-staging
