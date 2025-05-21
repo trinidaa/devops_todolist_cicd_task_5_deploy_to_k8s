@@ -1,5 +1,5 @@
 name: helm-deployment
-  run-name: ${{ github.actor }} - ${{ github.ref_name}} -${{ github.sha }}
+run-name: ${{ github.actor }} - ${{ github.ref_name}}
 
 on:
   workflow_call:
