@@ -126,7 +126,7 @@ jobs:
     - name: List files (debug)
       run: ls -la *.tgz
 
-  deploy helm-dev:
+  deploy-helm-dev:
     needs: [docker-ci, helm-ci]
     name: Deploy helm
     uses: ./.github/workflows/deployment-workflow.yml
@@ -134,4 +134,3 @@ jobs:
     with:
       environment: develop
       version: ${{ github.sha }}
-
