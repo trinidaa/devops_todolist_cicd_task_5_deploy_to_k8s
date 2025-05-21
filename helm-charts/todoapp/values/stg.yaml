@@ -1,11 +1,11 @@
 todoapp:
   environment: "staging"
-  namespace: todoapp
+  namespace: todoapp-staging
   image:
     repository: ikulyk404/todoapp
 
 mysql:
-  namespace: mysql-stg
+  namespace: mysql-staging
 
 
   resources:
