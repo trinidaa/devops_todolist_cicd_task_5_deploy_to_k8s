@@ -127,8 +127,8 @@ jobs:
       run: ls -la *.tgz
 
   deploy-helm-dev:
-    needs: [docker-ci, helm-ci]
     if: github.ref_name == 'main' || github.ref_name == 'test/develop'
+    needs: [docker-ci, helm-ci]
     name: Deploy helm
     uses: ./.github/workflows/deployment-workflow.yml
     secrets: inherit
