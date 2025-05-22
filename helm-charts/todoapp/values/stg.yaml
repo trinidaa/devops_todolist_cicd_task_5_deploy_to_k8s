@@ -2,8 +2,8 @@ todoapp:
   environment: "staging"
   namespace: todoapp-staging
   image:
-    repository: trinida/todoapp
-    tag: latest
+    repository: ""
+    tag: ""
 
 mysql:
   namespace: mysql-staging
