@@ -68,13 +68,13 @@ jobs:
           helm upgrade --install --dry-run --debug \
             ${{ inputs.helm-release-name }} ./$CHART_FILE \
             -f ${{ inputs.helm-values-path }} \
-            --set image.repository="${{ env.DockerImageName }}" \
-            --set image.tag="${{ inputs.version }}"
+            --set image.repository=${{ env.DockerImageName }} \
+            --set image.tag=${{ inputs.version }}
 
       - name: Deploy Helm to AKS
         run: |
           CHART_FILE=$(ls -t todoapp-*.tgz | head -n 1)
-          helm upgrade --install --atomic --wait --timeout 600s \
+          helm upgrade --install --atomic --wait --timeout 600s --force \
             ${{ inputs.helm-release-name }} ./$CHART_FILE \
             -f ${{ inputs.helm-values-path }} \
             --set mysql.MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }} \
@@ -85,8 +85,8 @@ jobs:
             --set todoapp.secrets.DB_USER=${{ secrets.DB_USER }} \
             --set todoapp.secrets.DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
             --set todoapp.secrets.DB_HOST=${{ secrets.DB_HOST }} \
-            --set-string image.repository="${{ env.DockerImageName }}" \
-            --set-string image.tag="${{ inputs.version }}"
+            --set todoapp.image.repository=${{ env.DockerImageName }} \
+            --set todoapp.image.tag=${{ inputs.version }}
 
 
       - name: Verify Deployment
