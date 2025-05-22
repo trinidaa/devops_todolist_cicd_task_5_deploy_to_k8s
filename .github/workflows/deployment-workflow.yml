@@ -1,32 +1,36 @@
 name: helm-deployment
-run-name: ${{ github.actor }} - ${{ github.ref_name}}
+run-name: ${{ github.actor }} - ${{ github.ref_name }}
 
 on:
   workflow_call:
     inputs:
       environment:
         required: true
-        description: '++++ Environment to deploy to ++++'
+        description: 'Environment to deploy to'
         type: string
       version:
         required: true
-        description: '++++ Helm chart version to deploy ++++'
+        description: 'Image tag version to deploy'
         type: string
       helm-values-path:
         type: string
         default: './todoapp/values.yaml'
       helm-release-name:
         type: string
-        default: todoapp
+        default: 'todoapp'
+
+env:
+  DOCKER_IMAGE_NAME: ${{ format('{0}/{1}/todoapp', env.DOCKER_REGISTRY, github.repository_owner) }}
+  DOCKER_REGISTRY: 'ghcr.io'
+
 jobs:
+  helm-deploy:
+    runs-on: ubuntu-latest
+    if: github.ref_name == 'main' || github.ref_name == 'test/develop'
+    name: Deploy to ${{ inputs.environment }}
+    environment: ${{ inputs.environment }}
 
-    helm-deploy:
-      runs-on: ubuntu-latest
-      if: github.ref_name == 'main' || github.ref_name == 'test/develop'
-      name: ${{ inputs.environment }}
-      environment: ${{ inputs.environment }}
-      steps:
-
+    steps:
       - uses: actions/download-artifact@v4
         with:
           name: helm-package_on_helm-ci
@@ -53,24 +57,38 @@ jobs:
           cluster-name: ${{ vars.AZURE_CLUSTER_NAME }}
           resource-group: ${{ vars.AZURE_RESOURCE_GROUP }}
 
-      - name: Deploy Helm dry-run (TEST)
+      - name: Verify Image Availability
+        run: |
+          echo "Checking image: ${{ env.DOCKER_IMAGE_NAME }}:${{ inputs.version }}"
+          docker pull ${{ env.DOCKER_IMAGE_NAME }}:${{ inputs.version }} || exit 1
 
+      - name: Dry Run Helm Deployment
         run: |
           CHART_FILE=$(ls -t todoapp-*.tgz | head -n 1)
-          helm upgrade --install  --dry-run --debug  todoapp ./$CHART_FILE \
+          helm upgrade --install --dry-run --debug \
+            ${{ inputs.helm-release-name }} ./$CHART_FILE \
+            -f ${{ inputs.helm-values-path }} \
+            --set image.repository="${{ env.DOCKER_IMAGE_NAME }}" \
+            --set image.tag="${{ inputs.version }}"
 
       - name: Deploy Helm to AKS
         run: |
           CHART_FILE=$(ls -t todoapp-*.tgz | head -n 1)
-          helm upgrade --install --atomic  --debug --wait --timeout 600s ${{ inputs.helm-release-name }} ./$CHART_FILE \
-          -f ${{ inputs.helm-values-path }}
-          --set mysql.MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}
-          --set mysql.MYSQL_USER=${{ secrets.MYSQL_USER }}
-          --set mysql.MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
-          --set todoapp.secrets.SECRET_KEY=${{ secrets.SECRET_KEY }}
-          --set todoapp.secrets.DB_NAME=${{ secrets.DB_NAME }}
-          --set todoapp.secrets.DB_USER=${{ secrets.DB_USER }}
-          --set todoapp.secrets.DB_PASSWORD=${{ secrets.DB_PASSWORD }}
-          --set todoapp.secrets.DB_HOST=${{ secrets.DB_HOST }}
-          --set image.repository="${{ env.DockerImageName }}"
-          --set image.tag="${{ github.sha }}"
+          helm upgrade --install --atomic --wait --timeout 600s \
+            ${{ inputs.helm-release-name }} ./$CHART_FILE \
+            -f ${{ inputs.helm-values-path }} \
+            --set mysql.MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }} \
+            --set mysql.MYSQL_USER=${{ secrets.MYSQL_USER }} \
+            --set mysql.MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }} \
+            --set todoapp.secrets.SECRET_KEY=${{ secrets.SECRET_KEY }} \
+            --set todoapp.secrets.DB_NAME=${{ secrets.DB_NAME }} \
+            --set todoapp.secrets.DB_USER=${{ secrets.DB_USER }} \
+            --set todoapp.secrets.DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
+            --set todoapp.secrets.DB_HOST=${{ secrets.DB_HOST }} \
+            --set-string image.repository="${{ env.DOCKER_IMAGE_NAME }}" \
+            --set-string image.tag="${{ inputs.version }}"
+
+      - name: Verify Deployment
+        run: |
+          kubectl get pods -n ${{ inputs.helm-release-name }}
+          helm status ${{ inputs.helm-release-name }}
