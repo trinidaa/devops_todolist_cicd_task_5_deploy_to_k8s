@@ -7,8 +7,8 @@ mysql:
 todoapp:
   namespace: todoapp
   image:
-    repository: trinida/todoapp
-    tag: latest
+    repository: ""
+    tag: ""
 
   resources:
     requests:
