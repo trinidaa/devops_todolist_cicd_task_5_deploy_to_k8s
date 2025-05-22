@@ -21,8 +21,6 @@ on:
 
 env:
   DOCKER_REGISTRY: 'ghcr.io'
-  DOCKER_IMAGE_NAME: ${{ format('{0}/{1}/todoapp', env.DOCKER_REGISTRY, github.repository_owner) }}
-
 
 jobs:
   helm-deploy:
@@ -60,8 +58,8 @@ jobs:
 
       - name: Verify Image Availability
         run: |
-          echo "Checking image: ${{ env.DOCKER_IMAGE_NAME }}:${{ inputs.version }}"
-          docker pull ${{ env.DOCKER_IMAGE_NAME }}:${{ inputs.version }} || exit 1
+          echo "Checking image: ${{ env.DockerImageName }}:${{ inputs.version }}"
+          docker pull ${{ env.DockerImageName }}:${{ inputs.version }} || exit 1
 
       - name: Dry Run Helm Deployment
         run: |
@@ -69,7 +67,7 @@ jobs:
           helm upgrade --install --dry-run --debug \
             ${{ inputs.helm-release-name }} ./$CHART_FILE \
             -f ${{ inputs.helm-values-path }} \
-            --set image.repository="${{ env.DOCKER_IMAGE_NAME }}" \
+            --set image.repository="${{ env.DockerImageName }}" \
             --set image.tag="${{ inputs.version }}"
 
       - name: Deploy Helm to AKS
@@ -86,7 +84,7 @@ jobs:
             --set todoapp.secrets.DB_USER=${{ secrets.DB_USER }} \
             --set todoapp.secrets.DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
             --set todoapp.secrets.DB_HOST=${{ secrets.DB_HOST }} \
-            --set-string image.repository="${{ env.DOCKER_IMAGE_NAME }}" \
+            --set-string image.repository="${{ env.DockerImageName }}" \
             --set-string image.tag="${{ inputs.version }}"
 
       - name: Verify Deployment
