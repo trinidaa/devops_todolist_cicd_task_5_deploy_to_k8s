@@ -2,7 +2,8 @@ todoapp:
   environment: "staging"
   namespace: todoapp-staging
   image:
-    repository: ikulyk404/todoapp
+    repository: trinida/todoapp
+    tag: ${{ github.sha }}
 
 mysql:
   namespace: mysql-staging

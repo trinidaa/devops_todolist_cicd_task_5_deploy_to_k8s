@@ -134,13 +134,14 @@ jobs:
     secrets: inherit
     with:
       environment: develop
+      helm-release-name: todoapp-dev
       version: ${{ github.sha }}
 
 
   deploy-helm-staging:
     if: github.ref_name == 'main' || github.ref_name == 'test/develop'
     needs: deploy-helm-dev
-    name: Deploy helm
+    name: Deploy helm-staging
     uses: ./.github/workflows/deployment-workflow.yml
     secrets: inherit
     with:
