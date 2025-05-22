@@ -3,7 +3,7 @@ todoapp:
   namespace: todoapp-staging
   image:
     repository: ikulyk404/todoapp
-    tag: "4.0.1"
+
 
 mysql:
   namespace: mysql-staging
