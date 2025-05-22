@@ -8,7 +8,7 @@ todoapp:
   namespace: todoapp
   image:
     repository: trinida/todoapp
-    tag: ${{ github.sha }}
+    tag: latest
 
   resources:
     requests:

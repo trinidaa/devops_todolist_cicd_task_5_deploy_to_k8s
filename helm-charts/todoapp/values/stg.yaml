@@ -3,7 +3,7 @@ todoapp:
   namespace: todoapp-staging
   image:
     repository: trinida/todoapp
-    tag: ${{ github.sha }}
+    tag: latest
 
 mysql:
   namespace: mysql-staging
