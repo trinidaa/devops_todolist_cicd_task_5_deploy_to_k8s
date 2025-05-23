@@ -74,12 +74,13 @@ jobs:
       - name: Deploy Helm to AKS
         run: |
           CHART_FILE=$(ls -t todoapp-*.tgz | head -n 1)
-          helm upgrade --install --atomic --wait --timeout 600s --force \
+          helm upgrade --install --atomic --wait --timeout 15m --force \
             ${{ inputs.helm-release-name }} ./$CHART_FILE \
             -f ${{ inputs.helm-values-path }} \
             --set mysql.MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }} \
             --set mysql.MYSQL_USER=${{ secrets.MYSQL_USER }} \
             --set mysql.MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }} \
+            --set mysql.DB_NAME=${{ secrets.DB_NAME }} \
             --set todoapp.secrets.SECRET_KEY=${{ secrets.SECRET_KEY }} \
             --set todoapp.secrets.DB_NAME=${{ secrets.DB_NAME }} \
             --set todoapp.secrets.DB_USER=${{ secrets.DB_USER }} \
@@ -91,5 +92,5 @@ jobs:
 
       - name: Verify Deployment
         run: |
-          kubectl get pods -n ${{ inputs.helm-release-name }}
+          kubectl get pods -A --no-headers | grep -v 'kube-'
           helm status ${{ inputs.helm-release-name }}

@@ -26,7 +26,7 @@ spec:
               key: {{ $k }}
         {{- end }}
         - name: MYSQL_DATABASE
-          value: app_db
+          value: {{ .Values.secrets.DB_NAME }}
         ports:
         - name: {{ .Chart.Name }}
           containerPort: {{ .Values.port }}
