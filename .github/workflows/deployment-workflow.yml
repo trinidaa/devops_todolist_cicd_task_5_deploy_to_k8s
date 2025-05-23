@@ -89,7 +89,6 @@ jobs:
             --set todoapp.image.repository=${{ env.DockerImageName }} \
             --set todoapp.image.tag=${{ inputs.version }}
 
-
       - name: Verify Deployment
         run: |
           kubectl get pods -A --no-headers | grep -v 'kube-'
