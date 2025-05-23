@@ -10,7 +10,6 @@ secrets:
   MYSQL_ROOT_PASSWORD: placeholder
   MYSQL_USER: placeholder
   MYSQL_PASSWORD: placeholder
-  DB_NAME: placeholder
 
 resources:
   requests:

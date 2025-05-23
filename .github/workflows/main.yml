@@ -135,7 +135,7 @@ jobs:
     secrets: inherit
     with:
       environment: develop
-      helm-release-name: todoapp-dev
+      helm-release-name: todoapp
       version: ${{ github.sha }}
 
 
