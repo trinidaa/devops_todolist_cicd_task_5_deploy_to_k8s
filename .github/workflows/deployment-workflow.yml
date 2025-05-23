@@ -74,7 +74,7 @@ jobs:
       - name: Deploy Helm to AKS
         run: |
           CHART_FILE=$(ls -t todoapp-*.tgz | head -n 1)
-          helm upgrade --install --atomic --wait --timeout 15m --force \
+          helm upgrade --install --atomic --wait --timeout 10m --force \
             ${{ inputs.helm-release-name }} ./$CHART_FILE \
             -f ${{ inputs.helm-values-path }} \
             --set mysql.MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }} \
