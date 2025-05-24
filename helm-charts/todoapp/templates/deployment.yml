@@ -20,6 +20,15 @@ spec:
       containers:
       - name: {{ .Chart.Name }}
         image: {{ .Values.todoapp.image.repository }}:{{ .Values.todoapp.image.tag }}
+        command: ["sh", "-c"]
+        args:
+          - |
+            echo "Container started at $(date)" > /proc/1/fd/1  # Вывод в stdout
+            ls -la /app  # Проверка содержимого рабочей директории
+            env | grep -i "DB_"  # Проверка переменных (например, связанных с БД)
+            echo "Waiting for MySQL..."
+            /usr/local/bin/wait-for-it.sh mysql-0.mysql.mysql.svc.cluster.local:3306 --timeout=30 -- echo "MySQL is up!"
+            exec python manage.py migrate && python manage.py runserver 0.0.0.0:8080
         resources:
           requests:
             memory: {{ .Values.todoapp.resources.requests.memory }}

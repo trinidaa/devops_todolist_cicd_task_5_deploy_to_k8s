@@ -17,7 +17,8 @@ COPY --from=builder /app .
 
 RUN pip install --upgrade pip && \
     pip install -r requirements.txt
-
+RUN curl -o /usr/local/bin/wait-for-it.sh https://raw.githubusercontent.com/vishnubob/wait-for-it/master/wait-for-it.sh \
+    && chmod +x /usr/local/bin/wait-for-it.sh
 EXPOSE 8080
 
 # Run database migrations and start the Django application
