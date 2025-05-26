@@ -12,10 +12,10 @@ mysql:
   resources:
     requests:
       memory: "256Mi"
-      cpu: "150m"
+      cpu: "350m"
     limits:
       memory: "256Mi"
-      cpu: "150m"
+      cpu: "350m"
 
   hpa:
     minReplicas: 2
