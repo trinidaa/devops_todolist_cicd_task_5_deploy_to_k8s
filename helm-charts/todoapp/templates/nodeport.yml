@@ -8,7 +8,11 @@ spec:
   selector:
     app: todoapp
   ports:
-  - protocol: TCP
-    port: 80
-    targetPort: 8080
-    nodePort: 30007
+    {{- range .Values.spec.ports }}
+      port: {{ .port }}
+      targetPort: {{ .targetPort }}
+      protocol: {{ .protocol | default "TCP" }}
+      {{- if .nodePort }}  # Проверяем, задан ли nodePort
+      nodePort: {{ .nodePort }}
+      {{- end }}
+    {{- end }}
