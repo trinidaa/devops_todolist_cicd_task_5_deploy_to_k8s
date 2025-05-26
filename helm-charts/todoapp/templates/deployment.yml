@@ -17,6 +17,10 @@ spec:
       labels:
         app: {{ .Chart.Name }}
     spec:
+      initContainers:
+      - name: migrate
+        image: ghcr.io/trinida/todoapp:${{ github.sha }}
+        command: ["python", "manage.py", "migrate"]
       containers:
       - name: {{ .Chart.Name }}
         image: {{ .Values.todoapp.image.repository }}:{{ .Values.todoapp.image.tag }}
