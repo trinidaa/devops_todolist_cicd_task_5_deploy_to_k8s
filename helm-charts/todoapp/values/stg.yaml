@@ -1,40 +1,60 @@
 todoapp:
   environment: "staging"
-  namespace: todoapp-staging
+  namespace: "todoapp-staging"
   createNamespace: true
   image:
-    repository: ikulyk404/todoapp
+    repository: "ikulyk404/todoapp"
+    tag: ""  # Будет переопределяться в workflow
+    pullPolicy: "IfNotPresent"
+
   service:
-    type: NodePort
+    type: "NodePort"
     ports:
-      - name: http
+      - name: "http"
         port: 80
         targetPort: 8080
         nodePort: 30008
-        protocol: TCP
+        protocol: "TCP"
 
 mysql:
+  enabled: true
   environment: "staging"
-  namespace: mysql-staging
+  namespace: "mysql-staging"
   createNamespace: true
+
+  image:
+    repository: "mysql"
+    tag: "8.0"
+    pullPolicy: "IfNotPresent"
+
   resources:
     requests:
       memory: "256Mi"
       cpu: "300m"
+      storage: "1Gi"  # Добавлено для volumeClaimTemplate
     limits:
       memory: "256Mi"
       cpu: "300m"
 
   hpa:
+    enabled: true  # Явное включение
     minReplicas: 2
     maxReplicas: 5
-    cpu:
-      avarageUtilization: 70
-    memory:
-      avarageUtilization: 70
+    metrics:
+      - type: "Resource"
+        resource:
+          name: "cpu"
+          target:
+            type: "Utilization"
+            averageUtilization: 70  # Исправлено avarage -> average
+      - type: "Resource"
+        resource:
+          name: "memory"
+          target:
+            type: "Utilization"
+            averageUtilization: 70
 
-  volumes:
-    persistentVolume:
-      capacity: "1Gi"
-    persistentVolumeClaim:
-      requestStorage: "1Gi"
+  persistence:
+    enabled: true
+    size: "1Gi"
+    accessModes: ["ReadWriteOnce"]
