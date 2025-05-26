@@ -16,4 +16,4 @@ spec:
       protocol: {{ .protocol | default "TCP" }}
     {{- end }}
   selector:
-    app: {{ include "todoapp.name" . }}
+    app: todoapp
