@@ -10,6 +10,15 @@ todoapp:
     repository: ikulyk404/todoapp
     tag: "4.0.1"
 
+  service:
+    type: NodePort
+    ports:
+      - name: http
+        port: 80
+        targetPort: 8080
+        nodePort: 30007
+        protocol: TCP
+
   resources:
     requests:
       memory: "256Mi"
@@ -38,10 +47,3 @@ todoapp:
       capacity: "1Gi"
     persistentVolumeClaim:
       requestStorage: "1Gi"
-
-spec:
-  ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 8080
-      nodePort: 30007
