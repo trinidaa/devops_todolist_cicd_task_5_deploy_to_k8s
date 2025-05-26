@@ -13,10 +13,10 @@ todoapp:
   resources:
     requests:
       memory: "256Mi"
-      cpu: "150m"
+      cpu: "350m"
     limits:
       memory: "256Mi"
-      cpu: "150m"
+      cpu: "350m"
 
   secrets:
     SECRET_KEY: placeholder
