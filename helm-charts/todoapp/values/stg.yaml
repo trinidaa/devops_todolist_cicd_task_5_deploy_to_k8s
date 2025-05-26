@@ -13,6 +13,7 @@ todoapp:
         protocol: TCP
 
 mysql:
+  environment: "staging"
   namespace: mysql-staging
   resources:
     requests:
