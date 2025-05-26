@@ -7,23 +7,6 @@ todoapp:
     tag: "4.0.1"
     pullPolicy: IfNotPresent
 
-  hpa:
-    enabled: true  # Явное включение
-    minReplicas: 2
-    maxReplicas: 2
-    metrics:
-      - type: Resource
-        resource:
-          name: cpu
-          target:
-            type: Utilization
-            averageUtilization: 70  # Исправлено avarage -> average
-      - type: Resource
-        resource:
-          name: memory
-          target:
-            type: Utilization
-            averageUtilization: 70
   service:
     type: NodePort
     ports:
@@ -43,15 +26,6 @@ mysql:
     repository: mysql
     tag: "8.0"
     pullPolicy: IfNotPresent
-
-  resources:
-    requests:
-      memory: "256Mi"
-      cpu: "300m"
-      storage: "1Gi"  # Добавлено для volumeClaimTemplate
-    limits:
-      memory: "256Mi"
-      cpu: "300m"
 
   persistence:
     enabled: true

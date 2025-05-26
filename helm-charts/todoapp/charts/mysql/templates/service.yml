@@ -7,6 +7,6 @@ spec:
   selector:
     app: {{ .Chart.Name }}
   ports:
-  - name: {{ .Chart.Name }}-mysql
+  - name: {{ .Chart.Name }}-ports
     port: {{ .Values.mysql.port }}
   clusterIP: None

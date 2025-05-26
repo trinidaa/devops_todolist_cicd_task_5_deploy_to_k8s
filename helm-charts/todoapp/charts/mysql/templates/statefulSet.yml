@@ -6,7 +6,7 @@ metadata:
 spec:
   selector:
     matchLabels:
-      app: mysql
+      app: {{ .Chart.Name }}
   replicas: {{ .Values.mysql.replicas }}
   serviceName: {{ .Chart.Name }}-service
   template:
@@ -33,7 +33,7 @@ spec:
         volumeMounts:
         - name: data
           mountPath: /var/lib/mysql
-          subPath: mysql
+          subPath: {{ .Chart.Name }}
         - name: config-map
           mountPath: /docker-entrypoint-initdb.d
         resources:
