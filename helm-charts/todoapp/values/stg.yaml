@@ -22,6 +22,14 @@ mysql:
     limits:
       memory: "256Mi"
       cpu: "300m"
+  image:
+    repo: mysql
+    tag: "8.0"
+  port: 3306
+  secrets:
+    MYSQL_ROOT_PASSWORD: placeholder
+    MYSQL_USER: placeholder
+    MYSQL_PASSWORD: placeholder
 
   hpa:
     minReplicas: 2
