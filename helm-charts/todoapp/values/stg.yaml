@@ -1,31 +1,48 @@
 todoapp:
   environment: "staging"
-  namespace: "todoapp-staging"
+  namespace: todoapp-staging
   createNamespace: true
   image:
-    repository: "ikulyk404/todoapp"
-    tag: ""  # Будет переопределяться в workflow
-    pullPolicy: "IfNotPresent"
+    repository: ikulyk404/todoapp
+    tag: "4.0.1"
+    pullPolicy: IfNotPresent
 
+  hpa:
+    enabled: true  # Явное включение
+    minReplicas: 2
+    maxReplicas: 2
+    metrics:
+      - type: Resource
+        resource:
+          name: cpu
+          target:
+            type: Utilization
+            averageUtilization: 70  # Исправлено avarage -> average
+      - type: Resource
+        resource:
+          name: memory
+          target:
+            type: Utilization
+            averageUtilization: 70
   service:
-    type: "NodePort"
+    type: NodePort
     ports:
-      - name: "http"
+      - name: http
         port: 80
         targetPort: 8080
         nodePort: 30008
-        protocol: "TCP"
+        protocol: TCP
 
 mysql:
   enabled: true
   environment: "staging"
-  namespace: "mysql-staging"
+  namespace: mysql-staging
   createNamespace: true
 
   image:
-    repository: "mysql"
+    repository: mysql
     tag: "8.0"
-    pullPolicy: "IfNotPresent"
+    pullPolicy: IfNotPresent
 
   resources:
     requests:
@@ -35,24 +52,6 @@ mysql:
     limits:
       memory: "256Mi"
       cpu: "300m"
-
-  hpa:
-    enabled: true  # Явное включение
-    minReplicas: 2
-    maxReplicas: 5
-    metrics:
-      - type: "Resource"
-        resource:
-          name: "cpu"
-          target:
-            type: "Utilization"
-            averageUtilization: 70  # Исправлено avarage -> average
-      - type: "Resource"
-        resource:
-          name: "memory"
-          target:
-            type: "Utilization"
-            averageUtilization: 70
 
   persistence:
     enabled: true
