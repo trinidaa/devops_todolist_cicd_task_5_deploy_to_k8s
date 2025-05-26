@@ -7,7 +7,7 @@ spec:
   selector:
     matchLabels:
       app: mysql
-  replicas: {{ .Values.replicas }}
+  replicas: {{ .Values.mysql.replicas }}
   serviceName: {{ .Chart.Name }}
   template:
     metadata:
@@ -29,7 +29,7 @@ spec:
           value: app_db
         ports:
         - name: {{ .Chart.Name }}
-          containerPort: {{ .Values.port }}
+          containerPort: {{ .Values.mysql.port }}
         volumeMounts:
         - name: data
           mountPath: /var/lib/mysql
@@ -38,11 +38,11 @@ spec:
           mountPath: /docker-entrypoint-initdb.d
         resources:
           requests:
-            cpu: {{ .Values.resources.requests.cpu }}
-            memory: {{ .Values.resources.requests.memory }}
+            cpu: {{ .Values.mysql.resources.requests.cpu }}
+            memory: {{ .Values.mysql.resources.requests.memory }}
           limits:
-            cpu: {{ .Values.resources.limits.cpu }}
-            memory: {{ .Values.resources.limits.memory }}
+            cpu: {{ .Values.mysql.resources.limits.cpu }}
+            memory: {{ .Values.mysql.resources.limits.memory }}
       volumes:
       - name: config-map
         configMap:
@@ -54,4 +54,4 @@ spec:
       accessModes: ["ReadWriteOnce"]
       resources:
         requests:
-          storage: {{ .Values.resources.requests.storage }}
+          storage: {{ .Values.mysql.resources.requests.storage }}
