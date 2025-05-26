@@ -1,6 +1,7 @@
 todoapp:
   environment: "staging"
-  namespace: todoapp-staging
+  namespace: {{ .Chart.Name }}
+  createNamespace: true
   image:
     repository: ikulyk404/todoapp
   service:
@@ -15,6 +16,7 @@ todoapp:
 mysql:
   environment: "staging"
   namespace: mysql-staging
+  createNamespace: true
   resources:
     requests:
       memory: "256Mi"
@@ -22,14 +24,6 @@ mysql:
     limits:
       memory: "256Mi"
       cpu: "300m"
-  image:
-    repo: mysql
-    tag: "8.0"
-  port: 3306
-  secrets:
-    MYSQL_ROOT_PASSWORD: placeholder
-    MYSQL_USER: placeholder
-    MYSQL_PASSWORD: placeholder
 
   hpa:
     minReplicas: 2
