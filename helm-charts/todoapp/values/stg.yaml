@@ -26,8 +26,3 @@ mysql:
     repository: mysql
     tag: "8.0"
     pullPolicy: IfNotPresent
-
-  persistence:
-    enabled: true
-    size: "1Gi"
-    accessModes: ["ReadWriteOnce"]
