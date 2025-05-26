@@ -1,6 +1,6 @@
 todoapp:
   environment: "staging"
-  namespace: {{ .Chart.Name }}
+  namespace: todoapp-staging
   createNamespace: true
   image:
     repository: ikulyk404/todoapp
