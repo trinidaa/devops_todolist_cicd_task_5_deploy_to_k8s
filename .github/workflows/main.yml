@@ -95,7 +95,7 @@ jobs:
 
   helm-ci:
     runs-on: ubuntu-latest
-    needs: python-ci
+    needs: [docker-ci, python-ci]
     if: github.ref_name == 'main' || github.ref_name == 'test/develop'
     name: Helm CI Job
     steps:
