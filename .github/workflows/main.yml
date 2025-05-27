@@ -130,6 +130,11 @@ jobs:
     - name: List files (debug)
       run: ls -la *.tgz
 
+    - name: Check files STG.YAML (Debug)
+      run: |
+         ls -la ./todoapp/values/
+         cat ./todoapp/values/stg.yaml
+
   deploy-helm-dev:
     if: github.ref_name == 'main' || github.ref_name == 'test/develop'
     needs: [docker-ci, helm-ci]
@@ -153,3 +158,4 @@ jobs:
       version: ${{ github.sha }}
       helm-values-path: ./todoapp/values/stg.yaml
       helm-release-name: todoapp-staging
+      dry-run: false

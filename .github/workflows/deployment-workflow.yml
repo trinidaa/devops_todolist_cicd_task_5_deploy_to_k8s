@@ -65,11 +65,13 @@ jobs:
       - name: Dry Run Helm Deployment
         run: |
           CHART_FILE=$(ls -t todoapp-*.tgz | head -n 1)
-          helm upgrade --install --dry-run --debug --force \
+          helm upgrade --install --dry-run --debug \
           ${{ inputs.helm-release-name }} ./$CHART_FILE \
           -f ${{ inputs.helm-values-path }} \
-          --set image.repository=${{ env.DockerImageName }} \
-          --set image.tag=${{ inputs.version }}
+          --set todoapp.image.repository=${{ env.DockerImageName }} \
+          --set todoapp.image.tag=${{ inputs.version }}
+          --set todoapp.namespace ${{ inputs.namespace }} \
+          --set mysql.namespace=${{ inputs.namespace }}
 
       - name: Deploy Helm to AKS
         run: |
