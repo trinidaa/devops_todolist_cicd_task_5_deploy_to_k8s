@@ -70,7 +70,7 @@ jobs:
           -f ${{ inputs.helm-values-path }} \
           --set todoapp.image.repository=${{ env.DockerImageName }} \
           --set todoapp.image.tag=${{ inputs.version }} \
-          --set global.environment=${{ inputs.environment }}
+          --set global.environment=${{ inputs.environment }} \
           --namespace ${{ inputs.helm-release-name }} \
           --create-namespace
 
