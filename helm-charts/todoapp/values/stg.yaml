@@ -1,5 +1,5 @@
 todoapp:
-  environment: "staging"
+  environment: staging
   namespace: todoapp-staging
   createNamespace: true
   image:
@@ -18,11 +18,6 @@ todoapp:
 
 mysql:
   enabled: true
-  environment: "staging"
   namespace: mysql-staging
+  environment: staging
   createNamespace: true
-
-  image:
-    repository: mysql
-    tag: "8.0"
-    pullPolicy: IfNotPresent
