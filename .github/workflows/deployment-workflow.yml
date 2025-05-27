@@ -86,7 +86,7 @@ jobs:
             --set todoapp.secrets.DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
             --set todoapp.secrets.DB_HOST=${{ secrets.DB_HOST }} \
             --set todoapp.image.repository=${{ env.DockerImageName }} \
-            --set todoapp.image.tag=${{ inputs.version }}}
+            --set todoapp.image.tag=${{ inputs.version }}
 
       - name: Verify Deployment
         run: |
