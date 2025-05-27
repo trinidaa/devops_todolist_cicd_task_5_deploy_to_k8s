@@ -86,10 +86,7 @@ jobs:
             --set todoapp.secrets.DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
             --set todoapp.secrets.DB_HOST=${{ secrets.DB_HOST }} \
             --set todoapp.image.repository=${{ env.DockerImageName }} \
-            --set todoapp.image.tag=${{ inputs.version }}
-            --set todoapp.namespace=${{ vars.Values.todoapp.namespace }}
-            --set mysql.namespace=${{ vars.Values.mysql.namespace }}
-            --set todoapp.service.ports.nodePort=${{ vars.Values.todoapp.service.ports.nodePort }}
+            --set todoapp.image.tag=${{ inputs.version }}}
 
       - name: Verify Deployment
         run: |
