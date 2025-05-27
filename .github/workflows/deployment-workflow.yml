@@ -71,7 +71,8 @@ jobs:
           --set todoapp.image.repository=${{ env.DockerImageName }} \
           --set todoapp.image.tag=${{ inputs.version }} \
           --set global.environment=${{ inputs.environment }}
-
+          --namespace ${{ inputs.helm-release-name }} \
+          --create-namespace
 
       - name: Deploy Helm to AKS
         run: |

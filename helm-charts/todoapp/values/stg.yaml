@@ -13,7 +13,8 @@ todoapp:
         protocol: TCP
 
 mysql:
-  createNamespace: true
   enabled: true
   namespace: mysql-staging
+  createNamespace: true
   environment: staging
+  fullnameOverride: "mysql-staging"
