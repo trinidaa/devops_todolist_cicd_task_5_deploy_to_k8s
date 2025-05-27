@@ -64,30 +64,21 @@ jobs:
 
       - name: Dry Run Helm Deployment
         run: |
-          ADDITIONAL_FLAGS=""
-          if [ "${{ inputs.environment }}" == "staging" ]; then
-            ADDITIONAL_FLAGS="--set mysql.namespace=mysql-${{ inputs.environment }}\
-                    --set todoapp.namespace=todoapp-${{ inputs.environment }}"
-          elif [ "${{ inputs.environment }}" == "develop" ]; then
-            ADDITIONAL_FLAGS="--set mysql.namespace=mysql \
-                              --set todoapp.namespace=todoapp"
-          fi
-          
-          echo "🔧 Running dry-run with flags: $ADDITIONAL_FLAGS"
-          echo "📦 Using chart: $CHART_FILE"
-          echo "🌐 Environment: ${{ inputs.environment }}"
-          
+#          ADDITIONAL_FLAGS=""
+#          if [ "${{ inputs.environment }}" == "staging" ]; then
+#            ADDITIONAL_FLAGS="--set mysql.namespace=mysql-${{ inputs.environment }}\
+#                    --set todoapp.namespace=todoapp-${{ inputs.environment }}"
+#          elif [ "${{ inputs.environment }}" == "develop" ]; then
+#            ADDITIONAL_FLAGS="--set mysql.namespace=mysql \
+#                              --set todoapp.namespace=todoapp"
+#          fi
           CHART_FILE=$(ls -t todoapp-*.tgz | head -n 1)
           helm upgrade --install --dry-run --debug \
           ${{ inputs.helm-release-name }} ./$CHART_FILE \
           -f ${{ inputs.helm-values-path }} \
           --set todoapp.image.repository=${{ env.DockerImageName }} \
           --set todoapp.image.tag=${{ inputs.version }} \
-          --create-namespace \
-          $ADDITIONAL_FLAGS || {
-            echo "❌ Helm dry-run failed"
-            exit 1
-          }
+          --set global.environment="${{ inputs.environment }}"
 
 
       - name: Deploy Helm to AKS
@@ -106,6 +97,7 @@ jobs:
             --set todoapp.secrets.DB_HOST=${{ secrets.DB_HOST }} \
             --set todoapp.image.repository=${{ env.DockerImageName }} \
             --set todoapp.image.tag=${{ inputs.version }}
+            --set global.environment="${{ inputs.environment }}"
 
       - name: Verify Deployment
         run: |
