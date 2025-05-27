@@ -73,6 +73,7 @@ jobs:
           --set global.environment=${{ inputs.environment }} \
           --namespace ${{ inputs.helm-release-name }} \
           --create-namespace
+          
 
       - name: Deploy Helm to AKS
         run: |
