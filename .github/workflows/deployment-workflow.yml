@@ -64,14 +64,6 @@ jobs:
 
       - name: Dry Run Helm Deployment
         run: |
-#          ADDITIONAL_FLAGS=""
-#          if [ "${{ inputs.environment }}" == "staging" ]; then
-#            ADDITIONAL_FLAGS="--set mysql.namespace=mysql-${{ inputs.environment }}\
-#                    --set todoapp.namespace=todoapp-${{ inputs.environment }}"
-#          elif [ "${{ inputs.environment }}" == "develop" ]; then
-#            ADDITIONAL_FLAGS="--set mysql.namespace=mysql \
-#                              --set todoapp.namespace=todoapp"
-#          fi
           CHART_FILE=$(ls -t todoapp-*.tgz | head -n 1)
           helm upgrade --install --dry-run --debug \
           ${{ inputs.helm-release-name }} ./$CHART_FILE \
