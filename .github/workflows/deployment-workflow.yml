@@ -66,19 +66,28 @@ jobs:
         run: |
           ADDITIONAL_FLAGS=""
           if [ "${{ inputs.environment }}" == "staging" ]; then
-            ADDITIONAL_FLAGS="--set mysql.namespace=mysql-${{ inputs.environment }}, --set todoapp.namespace=todoapp-${{ inputs.environment }}"
+            ADDITIONAL_FLAGS="--set mysql.namespace=mysql-${{ inputs.environment }}\
+                    --set todoapp.namespace=todoapp-${{ inputs.environment }}"
           elif [ "${{ inputs.environment }}" == "develop" ]; then
-            ADDITIONAL_FLAGS="--set mysql.namespace=mysql , --set todoapp.namespace=todoapp"
+            ADDITIONAL_FLAGS="--set mysql.namespace=mysql \
+                              --set todoapp.namespace=todoapp"
           fi
+          
+          echo "🔧 Running dry-run with flags: $ADDITIONAL_FLAGS"
+          echo "📦 Using chart: $CHART_FILE"
+          echo "🌐 Environment: ${{ inputs.environment }}"
+          
           CHART_FILE=$(ls -t todoapp-*.tgz | head -n 1)
           helm upgrade --install --dry-run --debug \
           ${{ inputs.helm-release-name }} ./$CHART_FILE \
           -f ${{ inputs.helm-values-path }} \
           --set todoapp.image.repository=${{ env.DockerImageName }} \
           --set todoapp.image.tag=${{ inputs.version }} \
-          --namespace ${{ inputs.environment }} \
           --create-namespace \
-          $ADDITIONAL_FLAGS
+          $ADDITIONAL_FLAGS || {
+            echo "❌ Helm dry-run failed"
+            exit 1
+          }
 
 
       - name: Deploy Helm to AKS
