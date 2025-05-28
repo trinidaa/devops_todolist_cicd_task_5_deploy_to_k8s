@@ -36,8 +36,8 @@ todoapp:
     DB_HOST: placeholder
 
   hpa:
-    minReplicas: 2
-    maxReplicas: 5
+    minReplicas: 1
+    maxReplicas: 2
     cpu:
       avarageUtilization: 70
     memory:
