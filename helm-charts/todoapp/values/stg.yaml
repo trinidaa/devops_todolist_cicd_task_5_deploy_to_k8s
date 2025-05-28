@@ -1,5 +1,5 @@
 todoapp:
-  environment: "staging"
+  environment: staging
   namespace: todoapp-staging
   image:
     repository: ikulyk404/todoapp

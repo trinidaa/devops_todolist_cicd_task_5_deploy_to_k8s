@@ -5,6 +5,7 @@ mysql:
     MYSQL_PASSWORD: placeholder
 
 todoapp:
+  environment: develop
   namespace: todoapp
   image:
     repository: ikulyk404/todoapp
