@@ -68,6 +68,7 @@ jobs:
           helm upgrade --install --dry-run --debug --force \
           ${{ inputs.helm-release-name }} ./$CHART_FILE \
           -f ${{ inputs.helm-values-path }} \
+          --set global.environment=${{ inputs.environment }} \
           --set image.repository=${{ env.DockerImageName }} \
           --set image.tag=${{ inputs.version }}
 
@@ -77,6 +78,7 @@ jobs:
           helm upgrade --install --atomic --wait --timeout 20m --force \
             ${{ inputs.helm-release-name }} ./$CHART_FILE \
             -f ${{ inputs.helm-values-path }} \
+            --set global.environment=${{ inputs.environment }} \
             --set mysql.MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }} \
             --set mysql.MYSQL_USER=${{ secrets.MYSQL_USER }} \
             --set mysql.MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }} \

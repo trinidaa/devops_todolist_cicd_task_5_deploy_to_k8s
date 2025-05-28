@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Release.Name }}-{{ .Values.todoapp.environment}}
+  name: {{ .Release.Name }}
   namespace: {{ .Values.todoapp.namespace }}
 spec:
   strategy:
