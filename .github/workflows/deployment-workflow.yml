@@ -74,6 +74,17 @@ jobs:
 
       - name: Dry Run Helm Deployment
         run: |
+          if ! command -v yq &> /dev/null; then
+            echo "Installing yq..."
+            sudo wget https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64 -O /usr/bin/yq
+            sudo chmod +x /usr/bin/yq
+          fi
+          NAMESPACE=$(yq e '.namespace' ${{ inputs.helm-values-path }} 2>/dev/null)
+          if [ -z "$NAMESPACE" ]; then
+            NAMESPACE=${{ inputs.namespace }}
+            echo "Namespace not found in values.yaml, using from inputs: $NAMESPACE"
+          fi
+          
           CHART_FILE=$(ls -t todoapp-*.tgz | head -n 1)
           helm upgrade --install --dry-run --debug \
           ${{ inputs.helm-release-name }} ./$CHART_FILE \
@@ -81,8 +92,9 @@ jobs:
           --set global.environment=${{ inputs.environment }} \
           --set todoapp.image.repository=${{ env.DockerImageName }} \
           --set todoapp.image.tag=${{ inputs.version }} \
-          --namespace ${{ inputs.helm-release-name }}
-        
+          --namespace "$NAMESPACE" \
+          --create-namespace 
+          
 
       - name: Deploy Helm to AKS
         run: |
