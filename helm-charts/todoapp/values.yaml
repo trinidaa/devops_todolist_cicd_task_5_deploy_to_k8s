@@ -1,0 +1,50 @@
+mysql:
+  secrets:
+    MYSQL_ROOT_PASSWORD: placeholder
+    MYSQL_USER: placeholder
+    MYSQL_PASSWORD: placeholder
+
+todoapp:
+  environment: develop
+  namespace: todoapp
+  image:
+    repository: ikulyk404/todoapp
+    tag: "4.0.1"
+
+  service:
+    type: NodePort
+    ports:
+      - name: http
+        port: 80
+        targetPort: 8080
+        nodePort: 30007
+        protocol: TCP
+
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "350m"
+    limits:
+      memory: "256Mi"
+      cpu: "350m"
+
+  secrets:
+    SECRET_KEY: placeholder
+    DB_NAME: placeholder
+    DB_USER: placeholder
+    DB_PASSWORD: placeholder
+    DB_HOST: placeholder
+
+  hpa:
+    minReplicas: 2
+    maxReplicas: 5
+    cpu:
+      avarageUtilization: 70
+    memory:
+      avarageUtilization: 70
+
+  volumes:
+    persistentVolume:
+      capacity: "1Gi"
+    persistentVolumeClaim:
+      requestStorage: "1Gi"

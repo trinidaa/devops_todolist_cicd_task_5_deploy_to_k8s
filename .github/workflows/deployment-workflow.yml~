@@ -1,0 +1,106 @@
+name: helm-deployment
+run-name: ${{ github.actor }} - ${{ github.ref_name }}
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        description: 'Environment to deploy to'
+        type: string
+      version:
+        required: true
+        description: 'Image tag version to deploy'
+        type: string
+      helm-values-path:
+        type: string
+        default: './todoapp/values.yaml'
+      helm-release-name:
+        type: string
+        default: 'todoapp'
+
+env:
+  DOCKER_REGISTRY: 'ghcr.io'
+  DockerImageName: ${{ secrets.DOCKERHUB_USERNAME }}/todoapp
+
+jobs:
+  helm-deploy:
+    runs-on: ubuntu-latest
+    if: github.ref_name == 'main' || github.ref_name == 'valid_test_1'
+    name: Deploy to ${{ inputs.environment }}
+    environment: ${{ inputs.environment }}
+
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: helm-package_on_helm-ci
+          path: .
+
+      - uses: actions/download-artifact@v4
+        name: Download helm artifacts
+        with:
+          name: helm-artifacts
+          path: .
+
+      - name: Set Up Helm
+        uses: azure/setup-helm@v4.3.0
+
+      - name: Setup Kubectl
+        uses: azure/setup-kubectl@v4
+
+      - uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - uses: azure/aks-set-context@v4
+        with:
+          cluster-name: ${{ vars.AZURE_CLUSTER_NAME }}
+          resource-group: ${{ vars.AZURE_RESOURCE_GROUP }}
+
+      - name: Verify Image Availability
+        run: |
+          IMAGE="${{ env.DockerImageName }}:${{ inputs.version }}"
+          echo "Checking image: $IMAGE"
+          if docker image inspect $IMAGE >/dev/null 2>&1; then
+            echo "✅ Image exists locally"
+          else
+            echo "⚠️ Image not found locally, trying to pull..."
+            docker pull $IMAGE || {
+              echo "❌ Failed to pull image $IMAGE"
+            exit 1
+          }
+          echo "✅ Successfully pulled image"
+          fi
+
+      - name: Dry Run Helm Deployment
+        run: |
+          CHART_FILE=$(ls -t todoapp-*.tgz | head -n 1)
+          helm upgrade --install --dry-run --debug --force \
+          ${{ inputs.helm-release-name }} ./$CHART_FILE \
+          -f ${{ inputs.helm-values-path }} \
+          --set global.environment=${{ inputs.environment }} \
+          --set image.repository=${{ env.DockerImageName }} \
+          --set image.tag=${{ inputs.version }}
+
+      - name: Deploy Helm to AKS
+        run: |
+          CHART_FILE=$(ls -t todoapp-*.tgz | head -n 1)
+          helm upgrade --install --atomic --wait --timeout 20m --force \
+            ${{ inputs.helm-release-name }} ./$CHART_FILE \
+            -f ${{ inputs.helm-values-path }} \
+            --set global.environment=${{ inputs.environment }} \
+            --set mysql.secrets.MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }} \
+            --set mysql.secrets.MYSQL_USER=${{ secrets.MYSQL_USER }} \
+            --set mysql.secrets.MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }} \
+            --set todoapp.secrets.SECRET_KEY=${{ secrets.SECRET_KEY }} \
+            --set todoapp.secrets.DB_NAME=${{ secrets.DB_NAME }} \
+            --set todoapp.secrets.DB_USER=${{ secrets.DB_USER }} \
+            --set todoapp.secrets.DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
+            --set todoapp.secrets.DB_HOST=${{ secrets.DB_HOST }} \
+            --set todoapp.image.repository=${{ env.DockerImageName }} \
+            --set todoapp.image.tag=${{ inputs.version }}
+
+      - name: Verify Deployment
+        run: |
+          kubectl get pods -A --no-headers | grep -v 'kube-'
+          helm status ${{ inputs.helm-release-name }}
