@@ -59,8 +59,18 @@ jobs:
 
       - name: Verify Image Availability
         run: |
-          echo "Checking image: ${{ env.DockerImageName }}:${{ inputs.version }}"
-          docker pull ${{ env.DockerImageName }}:${{ inputs.version }} || exit 1
+          IMAGE="${{ env.DockerImageName }}:${{ inputs.version }}"
+          echo "Checking image: $IMAGE"
+          if docker image inspect $IMAGE >/dev/null 2>&1; then
+            echo "✅ Image exists locally"
+          else
+            echo "⚠️ Image not found locally, trying to pull..."
+            docker pull $IMAGE || {
+              echo "❌ Failed to pull image $IMAGE"
+            exit 1
+          }
+          echo "✅ Successfully pulled image"
+          fi
 
       - name: Dry Run Helm Deployment
         run: |
@@ -72,7 +82,7 @@ jobs:
           --set todoapp.image.repository=${{ env.DockerImageName }} \
           --set todoapp.image.tag=${{ inputs.version }} \
           --namespace ${{ inputs.helm-release-name }} \
-          --create-namespace
+          --create-namespace ${{ inputs.helm-values-path }}
           
 
       - name: Deploy Helm to AKS
