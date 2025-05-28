@@ -1,4 +1,5 @@
 mysql:
+  environment: develop
   namespace: mysql
 
   replicas: 1
