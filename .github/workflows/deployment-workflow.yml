@@ -69,14 +69,6 @@ jobs:
           ${{ inputs.helm-release-name }} ./$CHART_FILE \
           -f ${{ inputs.helm-values-path }} \
           --set global.environment=${{ inputs.environment }} \
-#          --set mysql.secrets.MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }} \
-#          --set mysql.secrets.MYSQL_USER=${{ secrets.MYSQL_USER }} \
-#          --set mysql.secrets.MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }} \
-#          --set todoapp.secrets.SECRET_KEY=${{ secrets.SECRET_KEY }} \
-#          --set todoapp.secrets.DB_NAME=${{ secrets.DB_NAME }} \
-#          --set todoapp.secrets.DB_USER=${{ secrets.DB_USER }} \
-#          --set todoapp.secrets.DB_PASSWORD=${{ secrets.DB_PASSWORD }} \
-#          --set todoapp.secrets.DB_HOST=${{ secrets.DB_HOST }} \
           --set todoapp.image.repository=${{ env.DockerImageName }} \
           --set todoapp.image.tag=${{ inputs.version }} \
           --namespace ${{ inputs.helm-release-name }} \
