@@ -59,8 +59,18 @@ jobs:
 
       - name: Verify Image Availability
         run: |
-          echo "Checking image: ${{ env.DockerImageName }}:${{ inputs.version }}"
-          docker pull ${{ env.DockerImageName }}:${{ inputs.version }} || exit 1
+          IMAGE="${{ env.DockerImageName }}:${{ inputs.version }}"
+          echo "Checking image: $IMAGE"
+          if docker image inspect $IMAGE >/dev/null 2>&1; then
+            echo "✅ Image exists locally"
+          else
+            echo "⚠️ Image not found locally, trying to pull..."
+            docker pull $IMAGE || {
+              echo "❌ Failed to pull image $IMAGE"
+            exit 1
+          }
+          echo "✅ Successfully pulled image"
+          fi
 
       - name: Dry Run Helm Deployment
         run: |
@@ -79,9 +89,9 @@ jobs:
             ${{ inputs.helm-release-name }} ./$CHART_FILE \
             -f ${{ inputs.helm-values-path }} \
             --set global.environment=${{ inputs.environment }} \
-            --set mysql.MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }} \
-            --set mysql.MYSQL_USER=${{ secrets.MYSQL_USER }} \
-            --set mysql.MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }} \
+            --set mysql.secrets.MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }} \
+            --set mysql.secrets.MYSQL_USER=${{ secrets.MYSQL_USER }} \
+            --set mysql.secrets.MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }} \
             --set todoapp.secrets.SECRET_KEY=${{ secrets.SECRET_KEY }} \
             --set todoapp.secrets.DB_NAME=${{ secrets.DB_NAME }} \
             --set todoapp.secrets.DB_USER=${{ secrets.DB_USER }} \
