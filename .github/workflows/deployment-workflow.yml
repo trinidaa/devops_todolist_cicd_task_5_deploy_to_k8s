@@ -26,7 +26,7 @@ env:
 jobs:
   helm-deploy:
     runs-on: ubuntu-latest
-    if: github.ref_name == 'main' || github.ref_name == 'valid_test'
+    if: github.ref_name == 'main' || github.ref_name == 'master'
     name: Deploy to ${{ inputs.environment }}
     environment: ${{ inputs.environment }}
 
