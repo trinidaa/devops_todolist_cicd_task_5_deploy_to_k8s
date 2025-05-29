@@ -4,7 +4,7 @@ metadata:
   name: {{ .Chart.Name }}-nodeport
   namespace: {{ .Values.todoapp.namespace | default .Release.Namespace }}
 spec:
-  type: {{ .Values.todoapp.service.type | default "ClusterIP" }}
+  type: {{ .Values.todoapp.service.type }}
   ports:
     {{- range .Values.todoapp.service.ports }}
     - name: {{ .name }}
@@ -13,7 +13,7 @@ spec:
       {{- if eq $.Values.todoapp.service.type "NodePort" }}
       nodePort: {{ .nodePort }}
       {{- end }}
-      protocol: {{ .protocol | default "TCP" }}
+      protocol: {{ .protocol }}
     {{- end }}
   selector:
     app: todoapp

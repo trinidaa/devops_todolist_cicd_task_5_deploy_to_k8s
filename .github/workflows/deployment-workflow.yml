@@ -20,7 +20,6 @@ on:
         default: 'todoapp'
 
 env:
-  DOCKER_REGISTRY: 'ghcr.io'
   DockerImageName: ${{ secrets.DOCKERHUB_USERNAME }}/todoapp
 
 jobs:
